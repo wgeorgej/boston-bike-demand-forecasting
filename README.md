@@ -1,3 +1,76 @@
+# Boston Bluebikes Demand Forecasting
+
+**A one-hour-ahead forecasting system for aggregate Bluebikes ridership in Boston.**
+
+This project builds a reproducible machine learning workflow that uses historical rider counts, calendar information, weather, and lagged demand features to forecast total ridership for the next hour. The workflow uses Kedro for data pipelines, CatBoost for forecasting, MLflow for experiment tracking and model management, and Dash with Plotly to display saved predictions.
+
+## Business problem
+
+Bike-sharing operators need to anticipate changes in rider demand to support planning for fleet availability, staffing, and other daily operations. When demand is higher or lower than expected, it can be harder to make those plans effectively.
+
+This project explores whether historical ridership and related time and weather features can provide a useful short-term forecast of total hourly demand.
+
+## Problem statement
+
+Given historical hourly demand and associated calendar, weather, and lagged-demand features, predict total Bluebikes riders for the next forecast hour. Evaluate predictions on a chronological holdout period to reflect the time-based nature of the problem.
+
+## Objectives
+
+- Build a repeatable data and modeling workflow with Kedro.
+- Validate incoming data and apply the project’s defined feature engineering.
+- Train and evaluate a CatBoost regression model using a chronological split.
+- Track model parameters, metrics, and artifacts in MLflow.
+- Register model versions and use the approved `champion` version for inference.
+- Save predictions with input and forecast timestamps.
+- Display saved predictions and observed demand in a Dash and Plotly dashboard.
+- Build and publish the Docker image through GitHub Actions.
+
+## Success measures
+
+### Historical model evaluation
+
+The notebook reports these results for its held-out historical test set:
+
+| Metric | Result | Interpretation |
+| --- | ---: | --- |
+| MAE | 45.63 riders/hour | Average absolute difference between actual and predicted hourly demand |
+| RMSE | 78.21 riders/hour | Error measure that gives larger misses more weight |
+| R² | 0.9669 | Measures how much of the variation in the test data is captured by the model |
+
+These are **historical model evaluation results**, not evidence of improved business outcomes or future performance.
+
+### Business success measure
+
+The primary business-aligned measure is **hourly demand forecast error in riders**, compared with a simple baseline such as predicting that the next hour will have the same demand as the current hour. Before claiming an improvement, calculate the baseline error on the same chronological test period and report the model’s relative improvement.
+
+Operational measures—such as fewer periods of low bike availability, fewer missed rentals, or reduced redistribution effort—would require operational data and evaluation after deployment.
+
+## How it works
+
+1. Kedro loads and validates the training or inference data.
+2. Feature engineering prepares the model inputs.
+3. The training pipeline fits the model and evaluates its predictions.
+4. MLflow records experiment details and stores registered model versions.
+5. The inference pipeline loads the configured registered model and saves timestamped predictions.
+6. The Dash dashboard displays saved predictions alongside observed demand.
+7. Docker Compose runs the dashboard and MLflow services; GitHub Actions runs tests and builds and publishes the Docker image.
+
+## Scope and limitations
+
+- The model predicts **aggregate ridership**, not demand for individual stations.
+- The dashboard currently plays back saved historical predictions. It is **not a live data feed**.
+- The project’s data validation warns about timestamp gaps but leaves rows unchanged. Because feature and target engineering is row-based, a row ahead may not always be exactly one clock hour when timestamps have gaps.
+- Historical test performance does not guarantee future performance. Ongoing evaluation is needed as new data becomes available.
+- The repository does not include the local Parquet data files. Add the dataset source, license, and instructions for obtaining the data here: **[insert source and license details]**.
+
+
+
+
+
+
+
+
+
 # seoul_bike
 
 [![Powered by Kedro](https://img.shields.io/badge/powered_by-kedro-ffc900?logo=kedro)](https://kedro.org)
