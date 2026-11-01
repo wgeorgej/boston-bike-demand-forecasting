@@ -577,3 +577,26 @@ select {
         flex-direction: column;
     }
 }
+
+.chart-panel {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+#demand-chart {
+    flex: 1 1 auto;
+    min-height: 0;
+    height: 100%;
+    width: 100%;
+}
+
+@media (max-width: 1050px) {
+    .chart-panel {
+        min-height: 430px;
+    }
+
+    #demand-chart {
+        min-height: 330px;
+    }
+}

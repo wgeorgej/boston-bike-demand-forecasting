@@ -305,6 +305,7 @@ app.layout = html.Div(
                 ),
                 dcc.Graph(
                     id="demand-chart",
+                    style={"height": "100%", "width": "100%"},
                     figure=go.Figure(),
                     config={
                         "displayModeBar": False,
@@ -340,7 +341,7 @@ app.layout = html.Div(
                             "id": "prediction",
                         },
                     ],
-                    page_size=6,
+                    page_size=10,
                     sort_action="native",
                     style_table={
                         "overflowX": "auto",
@@ -521,7 +522,7 @@ def build_chart(
     )
     figure.update_layout(
         template="plotly_white",
-        height=270,
+        autosize=True,
         margin={"l": 65, "r": 20, "t": 30, "b": 75},
         legend={"orientation": "h", "y": 1.02, "x": 1, "xanchor": "right", "yanchor": "bottom",},
         hovermode="x unified",
