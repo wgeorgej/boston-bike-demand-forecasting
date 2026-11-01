@@ -1,0 +1,579 @@
+:root {
+    font-family: Inter, "Segoe UI", Arial, sans-serif;
+    color: #243b53;
+    background: #f3f6fa;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    min-height: 100%;
+    margin: 0;
+    background: #f3f6fa;
+}
+
+body {
+    color: #243b53;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+button,
+input,
+select {
+    font: inherit;
+}
+
+.page-shell {
+    width: min(1440px, 100%);
+    min-height: 100vh;
+    margin: 0 auto;
+    padding: 36px 48px 24px;
+}
+
+.page-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 32px;
+    margin-bottom: 22px;
+}
+
+.brand {
+    min-width: 0;
+}
+
+.eyebrow {
+    margin-bottom: 10px;
+    color: #0f9d91;
+    font-size: 11px;
+    font-weight: 750;
+    letter-spacing: 1.5px;
+}
+
+.brand h1 {
+    margin: 0;
+    color: #102a43;
+    font-size: clamp(28px, 3vw, 40px);
+    font-weight: 750;
+    letter-spacing: -1.2px;
+    line-height: 1.12;
+}
+
+.brand p {
+    margin: 10px 0 0;
+    color: #627d98;
+    font-size: 15px;
+}
+
+.header-controls {
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+}
+
+.range-control {
+    width: 180px;
+}
+
+.range-control label {
+    display: block;
+    margin-bottom: 6px;
+    color: #486581;
+    font-size: 12px;
+    font-weight: 650;
+}
+
+/* Dash dropdown styling */
+.range-control .Select-control,
+.range-control .Select__control {
+    min-height: 40px;
+    border: 1px solid #d9e2ec;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: none;
+}
+
+.range-control .Select-control:hover,
+.range-control .Select__control:hover {
+    border-color: #0f9d91;
+}
+
+.range-control .Select-value,
+.range-control .Select__single-value,
+.range-control .Select-value-label {
+    color: #243b53;
+    line-height: 38px;
+}
+
+.playback-button {
+    min-height: 40px;
+    border: 0;
+    border-radius: 8px;
+    background: #102a43;
+    color: #fff;
+    padding: 0 18px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 150ms ease, transform 150ms ease;
+}
+
+.playback-button:hover {
+    background: #0f9d91;
+    transform: translateY(-1px);
+}
+
+.playback-button:focus-visible {
+    outline: 3px solid rgba(15, 157, 145, 0.3);
+    outline-offset: 2px;
+}
+
+.replay-status {
+    display: inline-flex;
+    align-items: center;
+    margin: 0 0 18px;
+    border: 1px solid #b7e4de;
+    border-radius: 20px;
+    background: #e9f7f5;
+    color: #087f75;
+    padding: 6px 11px;
+    font-size: 10px;
+    font-weight: 750;
+    letter-spacing: 0.7px;
+}
+
+.metric-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+    margin-bottom: 20px;
+}
+
+.metric-card {
+    min-height: 118px;
+    border: 1px solid #e5ebf1;
+    border-radius: 12px;
+    background: #fff;
+    padding: 17px 19px;
+    box-shadow: 0 3px 12px rgba(16, 42, 67, 0.035);
+}
+
+.metric-label {
+    margin-bottom: 8px;
+    color: #627d98;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.35px;
+    text-transform: uppercase;
+}
+
+.metric-value {
+    overflow: hidden;
+    color: #102a43;
+    font-size: clamp(19px, 2vw, 25px);
+    font-weight: 750;
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.metric-value.teal {
+    color: #0f9d91;
+}
+
+.metric-note {
+    margin-top: 6px;
+    color: #829ab1;
+    font-size: 12px;
+}
+
+.panel {
+    margin-bottom: 20px;
+    border: 1px solid #e5ebf1;
+    border-radius: 14px;
+    background: #fff;
+    padding: 23px 25px;
+    box-shadow: 0 4px 16px rgba(16, 42, 67, 0.04);
+}
+
+.chart-panel {
+    padding-bottom: 14px;
+}
+
+.panel-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 8px;
+}
+
+.panel-heading h2 {
+    margin: 0;
+    color: #102a43;
+    font-size: 19px;
+    font-weight: 720;
+    letter-spacing: -0.25px;
+}
+
+.panel-heading p {
+    margin: 5px 0 0;
+    color: #829ab1;
+    font-size: 13px;
+}
+
+.snapshot-badge {
+    flex: 0 0 auto;
+    border: 1px solid #d9e2ec;
+    border-radius: 20px;
+    background: #f8fafc;
+    color: #627d98;
+    padding: 5px 10px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+#demand-chart {
+    width: 100%;
+}
+
+.table-heading {
+    margin-bottom: 16px;
+}
+
+.page-footer {
+    padding: 2px 4px 12px;
+    color: #829ab1;
+    font-size: 12px;
+}
+
+/* Keep Dash's table consistent with the rest of the dashboard. */
+#forecasts-table {
+    overflow: hidden;
+    border: 1px solid #edf1f5;
+    border-radius: 9px;
+}
+
+#forecasts-table th {
+    background: #f4f7fa !important;
+    color: #486581 !important;
+    font-size: 11px !important;
+    font-weight: 750 !important;
+    letter-spacing: 0.35px;
+    text-transform: uppercase;
+}
+
+#forecasts-table td {
+    color: #243b53 !important;
+    font-size: 13px !important;
+}
+
+@media (max-width: 900px) {
+    .page-shell {
+        padding: 28px 24px 20px;
+    }
+
+    .page-header {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .metric-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 600px) {
+    .page-shell {
+        padding: 22px 15px 16px;
+    }
+
+    .brand h1 {
+        font-size: 29px;
+    }
+
+    .brand p {
+        font-size: 14px;
+    }
+
+    .header-controls {
+        width: 100%;
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .range-control {
+        width: 100%;
+    }
+
+    .playback-button {
+        min-height: 42px;
+    }
+
+    .metric-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .metric-card {
+        min-height: 105px;
+    }
+
+    .panel {
+        padding: 18px 14px;
+    }
+
+    .panel-heading {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .panel-heading h2 {
+        font-size: 17px;
+    }
+
+    .snapshot-badge {
+        align-self: flex-start;
+    }
+}
+
+/* Compact desktop layout: keep the dashboard within one viewport. */
+.page-shell {
+    display: grid;
+    grid-template-rows: auto auto auto minmax(0, 1fr) auto;
+    height: 100vh;
+    min-height: 0;
+    overflow: hidden;
+    padding: 14px 24px 10px;
+}
+
+.page-header {
+    margin-bottom: 10px;
+}
+
+.replay-status {
+    margin-bottom: 10px;
+}
+
+.metric-grid {
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.metric-card {
+    min-height: 88px;
+    padding: 12px 16px;
+}
+
+.metric-label {
+    margin-bottom: 5px;
+}
+
+.metric-value {
+    font-size: 21px;
+}
+
+.metric-note {
+    margin-top: 3px;
+}
+
+.main-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.8fr) minmax(390px, 1fr);
+    gap: 14px;
+    min-height: 0;
+}
+
+.main-grid > .panel {
+    min-width: 0;
+    min-height: 0;
+    height: 100%;
+    margin-bottom: 0;
+    overflow: hidden;
+}
+
+.chart-panel,
+.forecast-panel {
+    padding: 16px;
+}
+
+.chart-panel .panel-heading {
+    margin-bottom: 0;
+}
+
+.forecast-panel {
+    display: flex;
+    flex-direction: column;
+}
+
+.forecast-panel .table-heading {
+    margin-bottom: 10px;
+}
+
+#forecasts-table {
+    min-height: 0;
+}
+
+.page-footer {
+    padding: 8px 4px 0;
+}
+
+/* Use a stacked, scrollable layout on narrower screens. */
+@media (max-width: 1050px) {
+    .page-shell {
+        display: block;
+        height: auto;
+        min-height: 100vh;
+        overflow: visible;
+        padding: 24px;
+    }
+
+    .main-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .main-grid > .panel {
+        height: auto;
+        margin-bottom: 14px;
+    }
+}
+
+@media (max-width: 600px) {
+    .page-shell {
+        padding: 18px 14px;
+    }
+}
+
+.page-header {
+    margin-bottom: 6px;
+}
+
+.eyebrow {
+    margin-bottom: 4px;
+}
+
+.brand h1 {
+    font-size: 34px;
+}
+
+.brand p {
+    margin-top: 4px;
+    font-size: 13px;
+}
+
+.replay-status {
+    margin-bottom: 8px;
+    padding: 4px 10px;
+}
+
+.metric-grid {
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.metric-card {
+    min-height: 78px;
+    padding: 9px 14px;
+}
+
+.metric-value {
+    font-size: 19px;
+}
+
+.metric-note {
+    margin-top: 2px;
+    font-size: 11px;
+}
+
+.main-grid > .panel {
+    padding: 12px;
+}
+
+.chart-panel-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.chart-panel-heading h2 {
+    margin: 0;
+}
+
+.static-chart-legend {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    flex-shrink: 0;
+}
+
+.legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    color: #627d98;
+    font-size: 14px;
+}
+
+.legend-key {
+    position: relative;
+    display: inline-block;
+    width: 25px;
+    height: 0;
+    border-top: 2px solid;
+}
+
+.actual-key {
+    border-color: #e07a83;
+}
+
+.actual-key::before,
+.actual-key::after {
+    content: "";
+    position: absolute;
+    left: 11px;
+    top: -5px;
+    width: 2px;
+    height: 10px;
+    background: #e07a83;
+}
+
+.actual-key::before {
+    transform: rotate(45deg);
+}
+
+.actual-key::after {
+    transform: rotate(-45deg);
+}
+
+.predicted-key {
+    border-color: #0f9d91;
+}
+
+.predicted-key::after {
+    content: "";
+    position: absolute;
+    top: -4px;
+    left: 9px;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #0f9d91;
+}
+
+@media (max-width: 600px) {
+    .chart-panel-heading {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}

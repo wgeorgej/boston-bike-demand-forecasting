@@ -1,0 +1,61 @@
+feature_engineering:
+  rename_columns:
+    weekday: week_day
+    temp_c: temperature
+    wind_kmh: wind_speed
+    pressure_hpa: pressure
+
+  drop_columns:
+    - casual_duration
+    - member_duration
+    - casual_riders
+    - member_riders
+
+  lag_params:
+    total_riders: [1,2,3,22,23,24]
+
+training:
+  target_params:
+    target_column: target
+    source_column: total_riders
+    forecast_horizon: 1
+
+  train_fraction: 0.80
+
+  model_type: catboost
+
+  model_params:
+    catboost:
+      iterations: 966  # Temporary: we will resolve the best iteration next.
+      learning_rate: 0.09665329700123683
+      depth: 7
+      l2_leaf_reg: 1.3985320197126188
+      loss_function: RMSE
+      random_seed: 42
+      verbose: 0
+      allow_writing_files: false
+
+
+
+    random_forest:
+        n_estimators: 200
+        max_depth: 15
+        min_samples_split: 2
+        min_samples_leaf: 1
+        random_state: 42
+        n_jobs: -1
+
+
+inference:
+  year: 2024
+
+model_storage:
+  uri: "models:/Boston_Bike_Demand_Model@champion"
+
+ui:
+  actual_data_path: data/03_primary/blue_bike_boston_inference.parquet
+  predictions_path: data/07_model_output/predictions.parquet
+  update_interval_ms: 60000
+  playback_interval_ms: 800
+  animation_tick_ms: 50
+  default_lookback_hours: 24

@@ -1,0 +1,105 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+requires-python = ">=3.12,<3.13"
+name = "seoul_bike"
+readme = "README.md"
+dynamic = ["version"]
+dependencies = [
+    "kedro~=1.7.0",
+    "ipykernel>=6.31.0",
+    "pandas>=2.3.3",
+    "numpy>=2.2.6",
+    "matplotlib>=3.10.0,<3.11",
+    "seaborn>=0.13.2",
+    "pyarrow>=25.0.1",
+    "plotly>=7.1.0",
+    "ydata-profiling>=4.18.4",
+    "setuptools<81",
+    "fg-data-profiling>=4.20.0",
+    "ipywidgets>=8.1.9",
+    "nbformat>=4.2.0",
+    "scikit-learn>=1.9.1",
+    "catboost>=1.2.10",
+    "xgboost>=3.4.1",
+    "lightgbm>=4.7.0",
+    "optuna>=5.0.0",
+    "mlflow",
+    "kedro-datasets[pandas-parquetdataset]>=9.6.0",
+    "kedro-viz>=12.5.0",
+    "dash>=4.4.1",
+    "gunicorn>=26.2.0",
+]
+
+[project.scripts]
+"seoul-bike" = "seoul_bike.__main__:main"
+
+[project.entry-points."kedro.hooks"]
+
+[project.optional-dependencies]
+docs = [
+    "docutils<0.21",
+    "sphinx>=5.3,<7.3",
+    "sphinx_rtd_theme==2.0.0",
+    "nbsphinx==0.8.1",
+    "sphinx-autodoc-typehints==1.20.2",
+    "sphinx_copybutton==0.5.2",
+    "ipykernel>=5.3, <7.0",
+    "Jinja2<3.2.0",
+    "myst-parser>=1.0,<2.1"
+]
+dev = [
+    "pytest-cov>=3,<7",
+    "pytest-mock>=1.7.1, <2.0",
+    "pytest~=7.2",
+    "ruff~=0.12.0"
+]
+
+[tool.setuptools.dynamic]
+version = {attr = "seoul_bike.__version__"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+namespaces = false
+
+[tool.kedro]
+package_name = "seoul_bike"
+project_name = "seoul_bike"
+kedro_init_version = "1.7.0"
+tools = "['Linting', 'Testing', 'Custom Logging', 'Documentation', 'Data Structure']"
+example_pipeline = "False"
+source_dir = "src"
+
+[tool.pytest.ini_options]
+addopts = """
+--cov-report term-missing \
+--cov src/seoul_bike -ra"""
+
+[tool.coverage.report]
+fail_under = 0
+show_missing = true
+exclude_lines = ["pragma: no cover", "raise NotImplementedError"]
+
+[tool.ruff.format]
+docstring-code-format = true
+
+[tool.ruff]
+line-length = 88
+show-fixes = true
+
+[tool.ruff.lint]
+select = [
+    "F",   # Pyflakes
+    "W",   # pycodestyle
+    "E",   # pycodestyle
+    "I",   # isort
+    "UP",  # pyupgrade
+    "PL",  # Pylint
+    "T201", # Print Statement
+]
+ignore = ["E501"]  # Ruff format takes care of line-too-long
+
+[tool.kedro_telemetry]
+project_id = "0a7efbef8eac4ab4987147fd1a22f7ec"

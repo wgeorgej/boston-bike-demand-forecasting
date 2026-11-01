@@ -1,0 +1,13 @@
+﻿.venv/
+.viz/
+.git/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+catboost_info/
+data/
+mlruns/
+mlflow.db
+notebooks/
+tests/
+docs/
