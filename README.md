@@ -1,14 +1,17 @@
 # Boston Bluebikes Demand Forecasting
 
-**A one-hour-ahead forecasting system for aggregate Bluebikes ridership in Boston.**
+[![Tests](https://github.com/wgeorgej/boston-bike-demand-forecasting/actions/workflows/ci.yml/badge.svg)](https://github.com/wgeorgej/boston-bike-demand-forecasting/actions/workflows/ci.yml)
+[![Docker image](https://github.com/wgeorgej/boston-bike-demand-forecasting/actions/workflows/docker.yml/badge.svg)](https://github.com/wgeorgej/boston-bike-demand-forecasting/actions/workflows/docker.yml)
 
-This project builds a reproducible machine learning workflow that uses historical rider counts, calendar information, weather, and lagged demand features to forecast total ridership for the next hour. The workflow uses Kedro for data pipelines, CatBoost for forecasting, MLflow for experiment tracking and model management, and Dash with Plotly to display saved predictions.
+**A reproducible machine learning workflow for forecasting aggregate Bluebikes ridership for the next hour.**
+
+This project combines Kedro pipelines, CatBoost, MLflow, a Dash and Plotly dashboard, Docker Compose, and GitHub Actions. The dashboard replays saved historical forecasts against observed demand; it is not a live data feed.
 
 ## Business problem
 
-Bike-sharing operators need to anticipate changes in rider demand to support planning for fleet availability, staffing, and other daily operations. When demand is higher or lower than expected, it can be harder to make those plans effectively.
+Bike-sharing operators need to anticipate changes in rider demand when planning fleet availability, staffing, and other daily operations. This project investigates whether historical rider counts, calendar patterns, weather, and lagged demand can provide a useful short-term forecast of total hourly ridership.
 
-This project explores whether historical ridership and related time and weather features can provide a useful short-term forecast of total hourly demand.
+The forecast is system-wide and aggregate. It does not estimate demand at individual stations or directly optimize bike redistribution.
 
 ## Problem statement
 
@@ -17,10 +20,10 @@ Given historical hourly demand and associated calendar, weather, and lagged-dema
 ## Objectives
 
 - Build a repeatable data and modeling workflow with Kedro.
-- Validate incoming data and apply the project’s defined feature engineering.
+- Validate incoming data and apply the project's defined feature engineering.
 - Train and evaluate a CatBoost regression model using a chronological split.
 - Track model parameters, metrics, and artifacts in MLflow.
-- Register model versions and use the approved `champion` version for inference.
+- Register model versions in MLflow and load the approved `champion` alias for inference.
 - Save predictions with input and forecast timestamps.
 - Display saved predictions and observed demand in a Dash and Plotly dashboard.
 - Build and publish the Docker image through GitHub Actions.
@@ -29,165 +32,100 @@ Given historical hourly demand and associated calendar, weather, and lagged-dema
 
 ### Historical model evaluation
 
-The notebook reports these results for its held-out historical test set:
+The modelling notebook reports these metrics on its historical held-out test set:
 
-| Metric | Result | Interpretation |
+| Metric | Result | Meaning |
 | --- | ---: | --- |
-| MAE | 45.63 riders/hour | Average absolute difference between actual and predicted hourly demand |
-| RMSE | 78.21 riders/hour | Error measure that gives larger misses more weight |
-| R² | 0.9669 | Measures how much of the variation in the test data is captured by the model |
+| MAE | 45.63 riders | Average absolute prediction error per forecast row |
+| RMSE | 78.21 riders | Error measure that penalizes larger misses more strongly |
+| R² | 0.9669 | Coefficient of determination on the held-out test set |
 
-These are **historical model evaluation results**, not evidence of improved business outcomes or future performance.
+These are historical evaluation results. They do not establish future performance or measured business impact.
 
 ### Business success measure
 
-The primary business-aligned measure is **hourly demand forecast error in riders**, compared with a simple baseline such as predicting that the next hour will have the same demand as the current hour. Before claiming an improvement, calculate the baseline error on the same chronological test period and report the model’s relative improvement.
+Compare hourly forecast MAE with a simple baseline, such as predicting that the next hour will have the same demand as the current hour. Calculate both on the same chronological holdout period before claiming an improvement. A relative MAE improvement can be calculated as `1 - (model MAE / baseline MAE)`.
 
-Operational measures—such as fewer periods of low bike availability, fewer missed rentals, or reduced redistribution effort—would require operational data and evaluation after deployment.
+Operational outcomes—such as fewer periods of low bike availability, fewer missed rentals, or reduced redistribution effort—would require operational data and evaluation after deployment.
 
 ## How it works
 
-1. Kedro loads and validates the training or inference data.
-2. Feature engineering prepares the model inputs.
-3. The training pipeline fits the model and evaluates its predictions.
-4. MLflow records experiment details and stores registered model versions.
-5. The inference pipeline loads the configured registered model and saves timestamped predictions.
-6. The Dash dashboard displays saved predictions alongside observed demand.
-7. Docker Compose runs the dashboard and MLflow services; GitHub Actions runs tests and builds and publishes the Docker image.
-
-## Scope and limitations
-
-- The model predicts **aggregate ridership**, not demand for individual stations.
-- The dashboard currently plays back saved historical predictions. It is **not a live data feed**.
-- The project’s data validation warns about timestamp gaps but leaves rows unchanged. Because feature and target engineering is row-based, a row ahead may not always be exactly one clock hour when timestamps have gaps.
-- Historical test performance does not guarantee future performance. Ongoing evaluation is needed as new data becomes available.
-- The repository does not include the local Parquet data files. Add the dataset source, license, and instructions for obtaining the data here: **[insert source and license details]**.
-
-
-
-
-
-
-
-
-
-# seoul_bike
-
-[![Powered by Kedro](https://img.shields.io/badge/powered_by-kedro-ffc900?logo=kedro)](https://kedro.org)
-
-## Overview
-
-This is your new Kedro project, which was generated using `kedro 1.7.0`.
-
-Take a look at the [Kedro documentation](https://docs.kedro.org) to get started.
-
-## Rules and guidelines
-
-In order to get the best out of the template:
-
-* Don't remove any lines from the `.gitignore` file we provide
-* Make sure your results can be reproduced by following a data engineering convention
-* Don't commit data to your repository
-* Don't commit any credentials or your local configuration to your repository. Keep all your credentials and local configuration in `conf/local/`
-
-## How to install dependencies
-
-Declare any dependencies in `requirements.txt` for `pip` installation.
-
-To install them, run:
-
-```
-pip install -r requirements.txt
+```mermaid
+flowchart LR
+    A[Parquet training data] --> B[Validate and engineer features]
+    B --> C[Chronological split]
+    C --> D[Train CatBoost and evaluate]
+    D --> E[Log run and register model in MLflow]
+    F[Parquet inference data] --> G[Validate and engineer features]
+    G --> H[Load champion model]
+    E --> H
+    H --> I[Timestamped predictions in Parquet]
+    I --> J[Dash and Plotly historical replay]
 ```
 
-## How to run your Kedro pipeline
+- **Kedro** organizes validation, feature engineering, training, and inference pipelines.
+- **MLflow** stores experiment runs, model artifacts, and registered model versions.
+- **Dash and Plotly** display historical actuals and predictions with year, month, and time-range controls.
+- **Docker Compose** runs the dashboard and MLflow server, with training and inference available as on-demand jobs.
+- **GitHub Actions** runs tests and builds and publishes the container image to GitHub Container Registry (GHCR).
 
-You can run your Kedro project with:
+## Data and forecasting assumptions
 
-```
-kedro run
-```
+The project expects Parquet files at these catalog locations:
 
-## How to test your Kedro project
+- Training: `data/03_primary/blue_bike_boston_model.parquet`
+- Inference: `data/03_primary/blue_bike_boston_inference.parquet`
+- Saved predictions: `data/07_model_output/predictions.parquet`
 
-Have a look at the file `tests/test_run.py` for instructions on how to write your tests. You can run your tests as follows:
+The data files are excluded from Git. Before reusing the project, obtain the source data and confirm its redistribution terms. **Dataset source and license:** [add the original source URL and license].
 
-```
-pytest
-```
+The existing feature and target transformations are row-based and intentionally preserved. Validation reports timestamp gaps longer than one hour but passes the rows through unchanged. At gap boundaries, “one row ahead” may not mean exactly one clock hour; account for this when interpreting the nominal one-hour forecast horizon.
 
-You can configure the coverage threshold in your project's `pyproject.toml` file under the `[tool.coverage.report]` section.
+## Repository structure
 
-
-## Project dependencies
-
-To see and update the dependency requirements for your project use `requirements.txt`. You can install the project requirements with `pip install -r requirements.txt`.
-
-[Further information about project dependencies](https://docs.kedro.org/en/stable/kedro_project_setup/dependencies.html#project-specific-dependencies)
-
-## How to work with Kedro and notebooks
-
-> Note: Using `kedro jupyter` or `kedro ipython` to run your notebook provides these variables in scope: `context`, 'session', `catalog`, and `pipelines`.
->
-> Jupyter, JupyterLab, and IPython are already included in the project requirements by default, so once you have run `pip install -r requirements.txt` you will not need to take any extra steps before you use them.
-
-### Jupyter
-To use Jupyter notebooks in your Kedro project, you need to install Jupyter:
-
-```
-pip install jupyter
+```text
+conf/base/                  # Kedro catalog and parameters
+entrypoints/                # Training, inference, and dashboard launchers
+src/seoul_bike/pipelines/   # Kedro feature, training, and inference pipelines
+src/app_ui/                 # Dash application, data helpers, and CSS
+notebooks/                  # Exploration and modelling work
+tests/                      # Data validation and project tests
+docs/                       # Project and MLflow documentation
+Dockerfile                  # Application container image
+compose.yaml                # MLflow, dashboard, and on-demand job services
+.github/workflows/          # Test and image build/publish workflows
 ```
 
-After installing Jupyter, you can start a local notebook server:
+## Run locally
 
-```
-kedro jupyter notebook
-```
+### Requirements
 
-### JupyterLab
-To use JupyterLab, you need to install it:
+- Python 3.12
+- [`uv`](https://docs.astral.sh/uv/)
+- Docker Desktop with its Linux container engine, for the Compose setup
+- The required Parquet data files at the paths listed above
 
-```
-pip install jupyterlab
-```
+Install the locked development environment and run tests:
 
-You can also start JupyterLab:
-
-```
-kedro jupyter lab
+```powershell
+uv sync --locked --extra dev
+uv run --extra dev pytest -q
 ```
 
-### IPython
-And if you want to run an IPython session:
+### Run services with Docker Compose
 
-```
-kedro ipython
-```
-
-### How to ignore notebook output cells in `git`
-To automatically strip out all output cell contents before committing to `git`, you can use tools like [`nbstripout`](https://github.com/kynan/nbstripout). For example, you can add a hook in `.git/config` with `nbstripout --install`. This will run `nbstripout` before anything is committed to `git`.
-
-> *Note:* Your output cells will be retained locally.
-
-## Package your Kedro project
-
-[Further information about building project documentation and packaging your project](https://docs.kedro.org/en/stable/deploy/package_a_project/#package-an-entire-kedro-project)
-
-## Docker Compose workflow
-
-The local Docker Compose setup runs the dashboard and MLflow tracking server. Training and inference are available as on-demand jobs.
-
-### Start the services
-
-Start Docker Desktop, open PowerShell in the project root, then run:
+From the project root:
 
 ```powershell
 docker compose up -d --build
 ```
 
-Open the dashboard at [http://localhost:8050](http://localhost:8050) and the MLflow UI at [http://localhost:5000](http://localhost:5000).
+Open:
 
-Check service status and logs with:
+- Dashboard: [http://localhost:8050](http://localhost:8050)
+- MLflow UI: [http://localhost:5000](http://localhost:5000)
+
+Check status and logs:
 
 ```powershell
 docker compose ps
@@ -195,49 +133,47 @@ docker compose logs --tail 50 app-ui
 docker compose logs --tail 50 mlflow
 ```
 
-The MLflow server stores its database and model artifacts in the persistent `mlflow-store` Docker volume. This is separate from the original root-level `mlflow.db` and `mlruns` files.
-
-### Run training
-
-Training is an on-demand job. It logs the run to the Docker MLflow server and registers a new version of `Boston_Bike_Demand_Model`:
+Run training or inference as an on-demand job:
 
 ```powershell
 docker compose --profile jobs run --rm ml-train
+docker compose --profile jobs run --rm ml-inference
 ```
 
-Training does not automatically move the `champion` alias. Review the new version and its metrics in the MLflow UI before promoting it.
-
-### Promote a model to `champion`
-
-Choose a model version to promote, then run this from the project root. Replace `3` with the version you reviewed:
+Training creates a registered model version but does not automatically move the `champion` alias. Review its metrics in MLflow before promotion. To promote a reviewed version, replace `3` with its actual version number:
 
 ```powershell
 uv run python -c "from mlflow import MlflowClient; c=MlflowClient(tracking_uri='http://localhost:5000'); name='Boston_Bike_Demand_Model'; version='3'; candidate=c.get_model_version(name, version); assert candidate.status == 'READY'; c.set_registered_model_alias(name, 'champion', version); print(f'champion now points to version {version}')"
 ```
 
-Inference reads `model_storage.uri` from `conf/base/parameters.yml`. Keep it set to the alias URI:
+The inference configuration in `conf/base/parameters.yml` should point at the alias:
 
 ```yaml
 model_storage:
   uri: "models:/Boston_Bike_Demand_Model@champion"
 ```
 
-### Run inference and view predictions
+Stop the services with `docker compose down`. This keeps the `mlflow-store` volume; avoid `docker compose down -v` unless you intend to delete the MLflow database and model artifacts.
 
-Run the inference job to load the model assigned to `champion` and write predictions to the configured Parquet output:
+## Published container image
 
-```powershell
-docker compose --profile jobs run --rm ml-inference
-```
-
-The dashboard reads the Parquet files under the mounted `data` directory and displays the saved historical replay. It is not a live data feed.
-
-### Stop the services
-
-Stop the containers and Compose network with:
+The `main` branch workflow publishes the image to GHCR with `latest` and commit-specific tags:
 
 ```powershell
-docker compose down
+docker pull ghcr.io/wgeorgej/boston-bike-demand-forecasting:latest
 ```
 
-This keeps the `mlflow-store` volume. Avoid `docker compose down -v` unless you intend to delete the Docker MLflow database and model artifacts.
+The image is public. Running the dashboard also requires the expected data and configuration files to be available to the container, as they are in the Compose setup.
+
+## Limitations and next steps
+
+- The dashboard is a replay of saved historical inference results, not a live prediction service.
+- The model forecasts aggregate ridership, not station-level demand.
+- Timestamp gaps are warned about, not filled or resampled.
+- The reported scores are based on a historical holdout and should be compared with a simple baseline.
+- Automated production data ingestion, scheduled inference, drift monitoring, alerting, and a deployed public dashboard are not part of the current system.
+- Operational business outcomes such as fewer missed rentals or lower redistribution effort have not been measured.
+
+## Project documentation
+
+See [`docs/mlflow_notebook_review.md`](docs/mlflow_notebook_review.md) for the review of the modelling notebook's MLflow logging, a recommended logging pattern, model verification, and promotion guidance.
